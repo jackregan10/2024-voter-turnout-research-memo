@@ -35,10 +35,12 @@ education <- education |>
   select(County, HS_Graduation_Rate)
 
 ballot_count <- ballot_count |> 
-  mutate(across(where(is.character), ~ gsub("\u00A0", " ", .)))
+  mutate(across(where(is.character), ~ gsub("\u00A0", " ", .))) |>
+  rename(Counted_Ballots = Counted.Ballots)
 
 local_news <- local_news |> 
-  mutate(across(where(is.character), ~ gsub("\u00A0", " ", .)))
+  mutate(across(where(is.character), ~ gsub("\u00A0", " ", .))) |>
+  rename(Local_News_Outlets = Local.News.Outlets)
 
 #Join Data
 data_list <- list(education, ballot_count, local_news, voting_population, household_income)
