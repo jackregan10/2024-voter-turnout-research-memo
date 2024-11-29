@@ -1,0 +1,63 @@
+---
+title: "regression-analysis"
+author: "Jack Regan"
+date: "2024-11-25"
+output: pdf_document
+---
+
+```{r}
+#| label: import-library
+library(tidyverse)
+```
+
+```{r}
+#| label: import-data
+data <- read.csv("data/regression-data.csv")
+```
+
+```{r}
+#| label: calculate-voter-turnout
+
+data <- data |>
+  mutate(
+    Voter_Turnout = Counted_Ballots/Eligible_Population
+  )
+```
+
+```{r}
+#| label: add-categorical-variable-local-news
+
+data <- data |>
+  mutate(
+    Local_News_Cat = case_when(
+      Local_News_Outlets == 0 ~ "No Outlets",
+      Local_News_Outlets == 1 ~ "One Outlet",
+      .default = "More than One Outlet"
+    ),
+    Local_news_Cat = factor(Local_News_Cat, levels = c("No Outlets", "One Outlet", "More than One Outlet"))
+  )
+```
+
+```{r}
+#| label: mean-turnout-comparison
+
+mean_turnout <- data |>
+  group_by(Local_News_Cat) |>
+  summarize(
+    Mean_Turnout = mean(Voter_Turnout)
+  )
+```
+
+```{r}
+#| label: visualize-mean-turnout
+
+ggplot(mean_turnout, aes(x = Local_News_Cat, y = Mean_Turnout)) +
+  geom_col() + 
+  scale_y_continuous(limits = c(0, 1)) +
+  labs(
+    title = "Comparison of Mean Voter Turnout",
+    subtitles = "in North Carolina counties",
+    x = "Number of Local News Outlets",
+    y = "Average Voter Turnout"
+  )
+```
