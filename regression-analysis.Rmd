@@ -8,6 +8,7 @@ output: pdf_document
 ```{r}
 #| label: import-library
 library(tidyverse)
+library(tidymodels)
 ```
 
 ```{r}
@@ -34,7 +35,7 @@ data <- data |>
       Local_News_Outlets == 1 ~ "One Outlet",
       .default = "More than One Outlet"
     ),
-    Local_news_Cat = factor(Local_News_Cat, levels = c("No Outlets", "One Outlet", "More than One Outlet"))
+    Local_News_Cat = factor(Local_News_Cat, levels = c("No Outlets", "One Outlet", "More than One Outlet"))
   )
 ```
 
@@ -44,7 +45,7 @@ data <- data |>
 mean_turnout <- data |>
   group_by(Local_News_Cat) |>
   summarize(
-    Mean_Turnout = mean(Voter_Turnout)
+    Mean_Turnout = round(mean(Voter_Turnout), digits = 3)
   )
 ```
 
@@ -54,10 +55,30 @@ mean_turnout <- data |>
 ggplot(mean_turnout, aes(x = Local_News_Cat, y = Mean_Turnout)) +
   geom_col() + 
   scale_y_continuous(limits = c(0, 1)) +
+  geom_text(aes(label = Mean_Turnout), vjust = -0.5) +
+  theme_minimal() +
   labs(
     title = "Comparison of Mean Voter Turnout",
     subtitles = "in North Carolina counties",
     x = "Number of Local News Outlets",
-    y = "Average Voter Turnout"
+    y = "Average Voter Turnout",
+    caption = "caption"
   )
+```
+
+```{r}
+#| label: linear-regression
+
+set.seed(08242932)
+
+data_split <- initial_split(data)
+data_train <- training(data_split)
+data_test <- testing(data_split)
+
+data_fit <- linear_reg() |>
+  fit(Voter_Turnout ~ Local_News_Outlets + HS_Graduation_Rate + Mean_Earnings, data = data_train)
+
+tidy(data_fit)
+
+glance(data_fit)
 ```
