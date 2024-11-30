@@ -27,9 +27,9 @@ education <- education |>
   slice(0:-1) |>
   mutate(
     NAME  = gsub(", North Carolina", "", NAME),
-    HS_Graduation_Rate = (as.numeric(S1501_C01_003E) + as.numeric(S1501_C01_004E) + 
+    HS_Graduation_Rate = ((as.numeric(S1501_C01_003E) + as.numeric(S1501_C01_004E) + 
       as.numeric(S1501_C01_005E) + as.numeric(S1501_C01_014E)) / 
-      (as.numeric(S1501_C01_001E) + as.numeric(S1501_C01_006E))
+      (as.numeric(S1501_C01_001E) + as.numeric(S1501_C01_006E))) * 100
   ) |>
   rename("County" = NAME) |>
   select(County, HS_Graduation_Rate)

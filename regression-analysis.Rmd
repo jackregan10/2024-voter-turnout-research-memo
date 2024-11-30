@@ -21,7 +21,7 @@ data <- read.csv("data/regression-data.csv")
 
 data <- data |>
   mutate(
-    Voter_Turnout = Counted_Ballots/Eligible_Population
+    Voter_Turnout = (Counted_Ballots/Eligible_Population) * 100
   )
 ```
 
@@ -31,11 +31,11 @@ data <- data |>
 data <- data |>
   mutate(
     Local_News_Cat = case_when(
-      Local_News_Outlets == 0 ~ "No Outlets",
-      Local_News_Outlets == 1 ~ "One Outlet",
-      .default = "More than One Outlet"
+      Local_News_Outlets == 0 ~ "None",
+      Local_News_Outlets == 1 ~ "One",
+      .default = "More than One"
     ),
-    Local_News_Cat = factor(Local_News_Cat, levels = c("No Outlets", "One Outlet", "More than One Outlet"))
+    Local_News_Cat = factor(Local_News_Cat, levels = c("None", "One", "More than One"))
   )
 ```
 
@@ -45,7 +45,7 @@ data <- data |>
 mean_turnout <- data |>
   group_by(Local_News_Cat) |>
   summarize(
-    Mean_Turnout = round(mean(Voter_Turnout), digits = 3)
+    Mean_Turnout = round(mean(Voter_Turnout), digits = 2)
   )
 ```
 
@@ -53,16 +53,19 @@ mean_turnout <- data |>
 #| label: visualize-mean-turnout
 
 ggplot(mean_turnout, aes(x = Local_News_Cat, y = Mean_Turnout)) +
-  geom_col() + 
-  scale_y_continuous(limits = c(0, 1)) +
+  geom_col(fill = "black", width = 0.4) + 
   geom_text(aes(label = Mean_Turnout), vjust = -0.5) +
   theme_minimal() +
+  theme(
+    text = element_text(color = "black"),
+    panel.grid = element_blank(),
+    axis.line = element_line(color = "black"),
+    axis.title = element_text(face = "bold", family = "Arial", size = 12)
+  ) +
+  scale_y_continuous(expand = c(0, 0), limits = c(0, 100)) +
   labs(
-    title = "Comparison of Mean Voter Turnout",
-    subtitles = "in North Carolina counties",
     x = "Number of Local News Outlets",
-    y = "Average Voter Turnout",
-    caption = "caption"
+    y = "Mean Voter Turnout"
   )
 ```
 
@@ -78,7 +81,6 @@ data_test <- testing(data_split)
 data_fit <- linear_reg() |>
   fit(Voter_Turnout ~ Local_News_Outlets + HS_Graduation_Rate + Mean_Earnings, data = data_train)
 
-tidy(data_fit)
+summary(data_fit$fit)
 
-glance(data_fit)
 ```
