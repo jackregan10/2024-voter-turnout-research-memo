@@ -9,6 +9,7 @@ output: pdf_document
 #| label: import-library
 library(tidyverse)
 library(tidymodels)
+options(scipen = 999)
 ```
 
 ```{r}
@@ -40,21 +41,21 @@ data <- data |>
 ```
 
 ```{r}
-#| label: mean-turnout-comparison
+#| label: median-turnout-comparison
 
-mean_turnout <- data |>
+median_turnout <- data |>
   group_by(Local_News_Cat) |>
   summarize(
-    Mean_Turnout = round(mean(Voter_Turnout), digits = 2)
+    Median_Turnout = round(median(Voter_Turnout), digits = 2)
   )
 ```
 
 ```{r}
-#| label: visualize-mean-turnout
+#| label: visualize-median-turnout
 
-ggplot(mean_turnout, aes(x = Local_News_Cat, y = Mean_Turnout)) +
+ggplot(median_turnout, aes(x = Local_News_Cat, y = Median_Turnout)) +
   geom_col(fill = "black", width = 0.4) + 
-  geom_text(aes(label = Mean_Turnout), vjust = -0.5) +
+  geom_text(aes(label = paste(Median_Turnout, "%")), vjust = -0.5) +
   theme_minimal() +
   theme(
     text = element_text(color = "black"),
@@ -65,7 +66,7 @@ ggplot(mean_turnout, aes(x = Local_News_Cat, y = Mean_Turnout)) +
   scale_y_continuous(expand = c(0, 0), limits = c(0, 100)) +
   labs(
     x = "Number of Local News Outlets",
-    y = "Mean Voter Turnout"
+    y = "Voter Turnout Rate"
   )
 ```
 
