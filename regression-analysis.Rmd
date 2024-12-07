@@ -38,6 +38,8 @@ data <- data |>
     ),
     Local_News_Cat = factor(Local_News_Cat, levels = c("None", "One", "More than One"))
   )
+
+data |>
 ```
 
 ```{r}
